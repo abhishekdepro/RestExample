@@ -1,0 +1,36 @@
+String clientId = '3MVG9lcxCTdG2Vbuna28Xfn.ZS8OKsyIsko6Wrpcd4l64RJZ6r1rDAl.siizSPylOrnjxH.YpQX_2O'; 				//Will get from connected App
+String clientSecret = '8672551897843140087'; //Will get from connected App
+String username= 'usrename'; //Your username of the org
+String password= 'password'; //Username of the org + security token (if any)
+
+String reqbody = 'grant_type=password&client_id=‘ +clientId+'&client_secret='+ clientSecret+'&username='+username+'&password='+password;
+
+Http h = new Http();
+HttpRequest req = new HttpRequest();
+req.setBody(reqbody);
+req.setMethod('POST');
+req.setEndpoint('https://test.salesforce.com//services/oauth2/token');//Note if my domain is set up use the proper domain name else use login.salesforce.com for prod or developer or test.salesforce.com for sandbox instance
+HttpResponse res = h.send(req);
+system.debug('RESPONSE_BODY'+res.getbody());
+
+=====
+
+//to get the access token from response
+Map<String, Object> responseMap = (Map<String, Object>)JSON.deserializeUntyped(res.getbody());
+String accessToken = (String)responseMap.get('access_token');
+
+//fetch account records from salesforce org
+Http h1 = new Http();
+HttpRequest req1 = new HttpRequest();
+req1.setHeader('Authorization','Bearer '+accessToken);
+req1.setMethod('GET');
+req1.setEndpoint('https://cs88.salesforce.com/services/data/v20.0/query/?q=SELECT+name+from+Account');//URL will be your Salesforce REST API end point where you will do POST,PUT,DELETE orGET
+HttpResponse res1 = h1.send(req1);
+system.debug('RESPONSE_BODY'+res1 .getbody());
+
+
+
+
+
+
+
